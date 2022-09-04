@@ -22,7 +22,7 @@ class APIService {
         return new Movie(data)
     }
     static _constructUrl(path) {
-        return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
+        return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('YmFlNWEwM2MyMjdjMzNiOGQ5ODQyZjRlNmMxMzI4ODk=')}`;
     }
 }
 
@@ -99,5 +99,12 @@ class Movie {
         return this.backdropPath ? Movie.BACKDROP_BASE_URL + this.backdropPath : "";
     }
 }
+
+document.getElementById('homeBtn').addEventListener('click', () => {
+    document.getElementById("container").innerHTML = " ";
+    App.run;
+})
+    
+
 
 document.addEventListener("DOMContentLoaded", App.run);
