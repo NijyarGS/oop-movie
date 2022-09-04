@@ -102,7 +102,7 @@ class Movie {
 
 document.getElementById('homeBtn').addEventListener('click', () => {
     document.getElementById("container").innerHTML = " ";
-    App.run;
+    App.run();
 })
     
 
