@@ -21,6 +21,11 @@ class APIService {
         const data = await response.json()
         return new Movie(data)
     }
+
+    static async fetchActors(movieActors){
+        console.log(movieActors)
+    }
+
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('YmFlNWEwM2MyMjdjMzNiOGQ5ODQyZjRlNmMxMzI4ODk=')}`;
     }
@@ -102,9 +107,13 @@ class Movie {
 
 document.getElementById('homeBtn').addEventListener('click', () => {
     document.getElementById("container").innerHTML = " ";
-    App.run();
+    App.run()
 })
     
+document.getElementById("actorsButton").addEventListener('click', () => {
+    document.getElementById("container").innerHTML = " ";
+
+})
 
 
 document.addEventListener("DOMContentLoaded", App.run);
