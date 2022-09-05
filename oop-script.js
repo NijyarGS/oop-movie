@@ -44,6 +44,7 @@ class HomePage {
             this.container.appendChild(movieDiv);
         })
     }
+    
 }
 
 
@@ -116,6 +117,18 @@ class Genres{
         })
     }
 }
+
+class Home {
+    static homeButton(){
+       const homeBtn = document.getElementById('homeBtn')
+       homeBtn.addEventListener('click', (e) => {
+        document.getElementById('container').innerHTML = " "
+        App.run()
+       })
+    }
+}
+
+Home.homeButton()
 
 // console.log(Genres.fetchGenres())
 Genres.fetchGenres()
