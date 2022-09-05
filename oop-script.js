@@ -100,4 +100,24 @@ class Movie {
     }
 }
 
+class Genres{
+    static GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=bae5a03c227c33b8d9842f4e6c132889&language=en-US";
+    static async fetchGenres(){
+        const response = await fetch(this.GENRES_URL)
+        const data = await response.json()
+        console.log(data)
+        data.genres.forEach((genre)=> {
+            console.log(genre.name)
+            const genreDropdown = document.getElementById("genreDropdown")
+            const genresList = document.createElement('li')
+            genresList.innerHTML = `${genre.name}`  
+            genresList.classList = "dropdown-item"
+            genreDropdown.appendChild(genresList)
+        })
+    }
+}
+
+// console.log(Genres.fetchGenres())
+Genres.fetchGenres()
+ console.log("hi")
 document.addEventListener("DOMContentLoaded", App.run);
