@@ -9,3 +9,74 @@
 #actors {
     margin: 24px 16px 0 0;
 }
+
+.movieCrew {
+/* background-color: red; */
+padding: 10px 0;
+display: flex;
+justify-content: space-between;
+}
+
+.movieCrew > *{
+    background-color: rgb(232, 107, 128);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 150px;
+}
+.movieCrew > * > img {
+    width:100%; 
+    display: inline-block;
+}
+
+.videoSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    flex-direction: column;
+}
+.videoSection > iframe {
+    width: 800px;
+    height: 450px;
+}
+
+.companies{
+    display: flex; 
+    
+    flex-wrap: wrap;
+    align-items: stretch;
+
+
+    color: white;
+    gap: 10px;
+}
+
+.companies > * {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+
+    width: 300px;
+   
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.299);
+    color: white;
+}
+
+.companies > * > img {
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+}
+
+.companies > * > h3 {
+    width: 100%;
+    text-align: center;
+    background-color: black;
+    font-size: medium;
+    padding: 10px;
+    font-weight: bold;
+}
