@@ -67,10 +67,10 @@ class HomePage {
 class Movies {
     static async run(movie) {
         const movieData = await APIService.fetchMovie(movie.id)
-        MoviePage.renderMovieSection(movieData);
-        APIService.fetchActors(movieData)
-        APIService.fetchTrailer(movieData)
-        renderProductionCompany.render(movieData.productionCompanies)
+        MoviePage.renderMovieSection(movieData)
+        await APIService.fetchActors(movieData)
+        await APIService.fetchTrailer(movieData)
+        await renderProductionCompany.render(movieData.productionCompanies)
         
     }
 }
@@ -202,7 +202,6 @@ class renderProductionCompany{
     static IMG_URL = `http://image.tmdb.org/t/p/w780/`
     static async render(companies)
     {
-        console.log(companies)
         let comContain = document.createElement("div")
         comContain.className="companies"
         companies.forEach(e=>{
