@@ -91,10 +91,10 @@ class MovieSection {
         </div>
         <div id="movieSectionDiv" class="col-md-8">
           <h2 id="movie-title">${movie.title}</h2>
-          <p class="lead" id="genres"><strong>${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
+          <p class="lead" id="genres"><strong>Genre: ${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
           <p class="lead" id="languages"><strong> Language: ${movie.language.map(e=>{return e.english_name})} </strong></p>
-          <p class="lead" id="movie-release-date"><strong>${movie.releaseDate}</strong></p>
-          <p class="lead" id="movie-runtime"><strong>${movie.runtime}</strong></p>
+          <p class="lead" id="movie-release-date"><strong>Release Date: ${movie.releaseDate}</strong></p>
+          <p class="lead" id="movie-runtime"><strong>Run Time: ${movie.runtime}</strong></p>
           <h3>Overview:</h3>
           <p class="lead" id="movie-overview"><strong>${movie.overview}</strong></p>
         </div>
