@@ -56,10 +56,11 @@
                 <a id="filterBtn" class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Filter
                 </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <ul id="actorsDropdown" class="dropdown-menu position-absolute">
+                  <li><a class="dropdown-item" href="#" onclick="App.run('popular')">Popular</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="App.run('top_rated')">Top Rated</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="App.run('now_playing')">Now Playing</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="App.run('upcoming')">Up Coming</a></li>
                 </ul>
               </li>
               <li class="nav-item">

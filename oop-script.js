@@ -10,8 +10,8 @@ class App {
   };
 class APIService {
     static TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-    static async fetchMovies() {
-        const url = APIService._constructUrl(`movie/now_playing`)
+    static async fetchMovies(filter) {
+        const url = APIService._constructUrl(`movie/${filter}`)
         const response = await fetch(url)
         const data = await response.json()
         return data.results.map(movie => {
@@ -30,6 +30,7 @@ class APIService {
         const data = await response.json()
         return data.results.map(movie => new Movie(movie))
       }
+
 
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
@@ -89,6 +90,7 @@ class MovieSection {
         <div class="col-md-8">
           <h2 id="movie-title">${movie.title}</h2>
           <p class="lead" id="genres"><strong>${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
+          <p class="lead" id="languages"><strong> Language: ${movie.language.map(e=>{return e.english_name})} </strong></p>
           <p class="lead" id="movie-release-date"><strong>${movie.releaseDate}</strong></p>
           <p class="lead" id="movie-runtime"><strong>${movie.runtime}</strong></p>
           <h3>Overview:</h3>
@@ -111,6 +113,7 @@ class Movie {
         this.runtime = json.runtime + " minutes";
         this.overview = json.overview;
         this.backdropPath = json.backdrop_path;
+        this.language = json.spoken_languages;
     }
 
     get backdropUrl() {
@@ -120,15 +123,11 @@ class Movie {
 
 
 
-class Home {
-    static homeButton(){
-       const homeBtn = document.getElementById('homeBtn')
-       homeBtn.addEventListener('click', (e) => {
-        document.getElementById('container').innerHTML = " "
-        App.run()
+document.getElementById('homeBtn').addEventListener('click', (e) => {
+  document.getElementById('container').innerHTML = " "
+  App.run("now_playing")
        })
-    }
-}
+ 
 
-Home.homeButton()
+// Home.homeButton()
 document.addEventListener("DOMContentLoaded", App.run("now_playing"));
