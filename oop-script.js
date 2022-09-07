@@ -14,7 +14,6 @@ class APIService {
         const url = APIService._constructUrl(`movie/${filter}`)
         const response = await fetch(url)
         const data = await response.json()
-        console.log(data.results)
         return data.results.map(movie => {
             return new Movie(movie)})
     }
@@ -32,7 +31,6 @@ class APIService {
         return data.results.map(movie => new Movie(movie))
       }
 
-     // `https://api.themoviedb.org/3/person/popular?api_key=bae5a03c227c33b8d9842f4e6c132889&language=en-US&page=1
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
     }
