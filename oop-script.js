@@ -14,6 +14,7 @@ class APIService {
         const url = APIService._constructUrl(`movie/${filter}`)
         const response = await fetch(url)
         const data = await response.json()
+        console.log(data.results)
         return data.results.map(movie => {
             return new Movie(movie)})
     }
@@ -31,7 +32,7 @@ class APIService {
         return data.results.map(movie => new Movie(movie))
       }
 
-
+     // `https://api.themoviedb.org/3/person/popular?api_key=bae5a03c227c33b8d9842f4e6c132889&language=en-US&page=1
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
     }
@@ -47,9 +48,12 @@ class HomePage {
         movies.forEach(movie => {
            
             const movieDiv = document.createElement("div");
+            movieDiv.setAttribute("class", "col-md-4 col-sm-6")
             const movieImage = document.createElement("img");
+            movieImage.setAttribute("class", "img-fluid")
             movieImage.src = `${movie.backdropUrl}`;
             const movieTitle = document.createElement("h3");
+            movieTitle.setAttribute("class", "text-center")
             movieTitle.textContent = `${movie.title}`;
             movieImage.addEventListener("click", function() {
                 Movies.run(movie);
@@ -83,11 +87,11 @@ class MoviePage {
 class MovieSection {
     static renderMovie(movie) {
         MoviePage.container.innerHTML = `
-      <div class="row">
-        <div class="col-md-4">
-          <img id="movie-backdrop" src=${movie.backdropUrl}> 
+      <div class="row align-items-center">
+        <div class="col-md-4 my-4">
+          <img id="movie-backdrop" src=${movie.posterUrl}> 
         </div>
-        <div class="col-md-8">
+        <div id="movieSectionDiv" class="col-md-8">
           <h2 id="movie-title">${movie.title}</h2>
           <p class="lead" id="genres"><strong>${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
           <p class="lead" id="languages"><strong> Language: ${movie.language.map(e=>{return e.english_name})} </strong></p>
@@ -97,7 +101,7 @@ class MovieSection {
           <p class="lead" id="movie-overview"><strong>${movie.overview}</strong></p>
         </div>
       </div>
-      <h3 class="text-center">Actors:</h3>
+      <h3 class="text-center my-3">Actors:</h3>
     `;
     }
 }
@@ -112,12 +116,17 @@ class Movie {
         this.releaseDate = json.release_date;
         this.runtime = json.runtime + " minutes";
         this.overview = json.overview;
+        this.posterPath = json.poster_path;
         this.backdropPath = json.backdrop_path;
         this.language = json.spoken_languages;
     }
 
     get backdropUrl() {
         return this.backdropPath ? Movie.BACKDROP_BASE_URL + this.backdropPath : "";
+    }
+
+    get posterUrl(){
+        return this.posterPath ? Movie.BACKDROP_BASE_URL + this.posterPath : "";
     }
 }
 

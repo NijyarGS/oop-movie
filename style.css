@@ -13,6 +13,17 @@
     margin: 24px 16px 0 0;
 }
 
+img{
+    border-radius: 20px;
+}
+#movie-backdrop{
+   align-self: baseline;
+}
+
+/* #movieSectionDiv{
+    align-items: center;
+} */
+
 img#logo{
     width: 15%;
 }
