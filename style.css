@@ -80,3 +80,45 @@ justify-content: space-between;
     padding: 10px;
     font-weight: bold;
 }
+
+.relatedMoviesContainer {
+    background-color: rgba(0, 0, 0, 0.138);
+    
+}
+
+.relatedMoviesContainer > h2 {
+    text-align: center;
+    
+}
+
+.relatedMoviesContainer > div {
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+    padding: 20px 0px;
+}
+
+.relatedMoviesContainer >div >div
+{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    
+    
+    width: 240px;
+}
+.relatedMoviesContainer >div >div> img
+{
+    width: 100%;
+}
+
+.relatedMoviesContainer >div >div> span
+{
+    background-color: black;
+    color: white;   
+    width: 100%;
+    text-align: center;
+    font-size: small;
+}
