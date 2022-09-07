@@ -1,35 +1,50 @@
 //the API documentation site https://developers.themoviedb.org/3/
 
 class App {
-    static async run() {
-        const movies = await APIService.fetchMovies()
-        HomePage.renderMovies(movies);
-    }
-}
-
+    static async run(input) {
+      let movies
+      if (typeof input === "number") { movies = await APIService.fetchGenres(input) }
+      else { movies = await APIService.fetchMovies(input) }
+      HomePage.renderMovies(movies);
+    };
+  };
 class APIService {
     static TMDB_BASE_URL = 'https://api.themoviedb.org/3';
     static async fetchMovies() {
         const url = APIService._constructUrl(`movie/now_playing`)
         const response = await fetch(url)
         const data = await response.json()
-        return data.results.map(movie => new Movie(movie))
+        return data.results.map(movie => {
+            return new Movie(movie)})
     }
     static async fetchMovie(movieId) {
         const url = APIService._constructUrl(`movie/${movieId}`)
         const response = await fetch(url)
         const data = await response.json()
+       
         return new Movie(data)
     }
+
+    static async fetchGenres(genreId) {
+        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=bae5a03c227c33b8d9842f4e6c132889&include_adult=false&with_genres=${genreId}`);
+        const data = await response.json()
+        return data.results.map(movie => new Movie(movie))
+      }
+
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
     }
 }
 
+
 class HomePage {
     static container = document.getElementById('container');
     static renderMovies(movies) {
+        if (container.innerText !== "") {
+            container.innerText = "";
+          }
         movies.forEach(movie => {
+           
             const movieDiv = document.createElement("div");
             const movieImage = document.createElement("img");
             movieImage.src = `${movie.backdropUrl}`;
@@ -51,9 +66,9 @@ class HomePage {
 class Movies {
     static async run(movie) {
         const movieData = await APIService.fetchMovie(movie.id)
+      
         MoviePage.renderMovieSection(movieData);
-        APIService.fetchActors(movieData)
-
+        // APIService.fetchActors(movieData);
     }
 }
 
@@ -73,23 +88,25 @@ class MovieSection {
         </div>
         <div class="col-md-8">
           <h2 id="movie-title">${movie.title}</h2>
-          <p id="genres">${movie.genres}</p>
-          <p id="movie-release-date">${movie.releaseDate}</p>
-          <p id="movie-runtime">${movie.runtime}</p>
+          <p class="lead" id="genres"><strong>${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
+          <p class="lead" id="movie-release-date"><strong>${movie.releaseDate}</strong></p>
+          <p class="lead" id="movie-runtime"><strong>${movie.runtime}</strong></p>
           <h3>Overview:</h3>
-          <p id="movie-overview">${movie.overview}</p>
+          <p class="lead" id="movie-overview"><strong>${movie.overview}</strong></p>
         </div>
       </div>
-      <h3>Actors:</h3>
+      <h3 class="text-center">Actors:</h3>
     `;
     }
 }
+
 
 class Movie {
     static BACKDROP_BASE_URL = 'http://image.tmdb.org/t/p/w780';
     constructor(json) {
         this.id = json.id;
         this.title = json.title;
+        this.genres = json.genres;
         this.releaseDate = json.release_date;
         this.runtime = json.runtime + " minutes";
         this.overview = json.overview;
@@ -101,22 +118,7 @@ class Movie {
     }
 }
 
-class Genres{
-    static GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=bae5a03c227c33b8d9842f4e6c132889&language=en-US";
-    static async fetchGenres(){
-        const response = await fetch(this.GENRES_URL)
-        const data = await response.json()
-        console.log(data)
-        data.genres.forEach((genre)=> {
-            console.log(genre.name)
-            const genreDropdown = document.getElementById("genreDropdown")
-            const genresList = document.createElement('li')
-            genresList.innerHTML = `${genre.name}`  
-            genresList.classList = "dropdown-item"
-            genreDropdown.appendChild(genresList)
-        })
-    }
-}
+
 
 class Home {
     static homeButton(){
@@ -129,8 +131,4 @@ class Home {
 }
 
 Home.homeButton()
-
-// console.log(Genres.fetchGenres())
-Genres.fetchGenres()
- console.log("hi")
-document.addEventListener("DOMContentLoaded", App.run);
+document.addEventListener("DOMContentLoaded", App.run("now_playing"));
