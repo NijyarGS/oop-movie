@@ -52,8 +52,32 @@ class APIService {
         return new MovieCredits(data);
       }
 
+    static async fetchActors(movieId){
+        const url = APIService._constructUrl(`movie/${movieId.id}/credits`)
+        const response = await fetch(url)
+        const data = await response.json()
+        renderMovieActors.render(data)
+    }
+
+    static async fetchTrailer(movieId)
+    {
+        const url = APIService._constructUrl(`movie/${movieId.id}/videos`)
+        const response = await fetch(url)
+        const data = await response.json()
+        renderTrailer.render(data)
+    }
+    
+    static async fetchSimilar(movieId){
+        const url = APIService._constructUrl(`movie/${movieId.id}/recommendations`)
+        const response = await fetch(url)
+        const data = await response.json()
+        renderSimilar.render(data)
+
+    }
+
+
     static _constructUrl(path) {
-        return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
+        return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('YmFlNWEwM2MyMjdjMzNiOGQ5ODQyZjRlNmMxMzI4ODk=')}`;
     }
 }
 
@@ -229,9 +253,11 @@ class HomePage {
 class Movies {
     static async run(movie) {
         const movieData = await APIService.fetchMovie(movie.id)
-      
-        MoviePage.renderMovieSection(movieData);
-        // APIService.fetchActors(movieData);
+        MoviePage.renderMovieSection(movieData)
+        await APIService.fetchActors(movieData)
+        await APIService.fetchTrailer(movieData)
+        await renderProductionCompany.render(movieData.productionCompanies)
+        await APIService.fetchSimilar(movieData)
     }
 }
 
@@ -251,10 +277,14 @@ class MovieSection {
         </div>
         <div id="movieSectionDiv" class="col-md-8">
           <h2 id="movie-title">${movie.title}</h2>
+          
           <p class="lead" id="genres"><strong>Genre: ${movie.genres.map(genre=>genre.name).join(", ")}</strong></p>
           <p class="lead" id="languages"><strong> Language: ${movie.language.map(e=>{return e.english_name})} </strong></p>
+          <p id="voteCount"> Number of Rates:  ${movie.voteCount} </p>
+          <p id="voteaAerage"> Rating: ${movie.voteAverage} </p>
           <p class="lead" id="movie-release-date"><strong>Release Date: ${movie.releaseDate}</strong></p>
           <p class="lead" id="movie-runtime"><strong>Run Time: ${movie.runtime}</strong></p>
+
           <h3>Overview:</h3>
           <p class="lead" id="movie-overview"><strong>${movie.overview}</strong></p>
         </div>
@@ -264,19 +294,31 @@ class MovieSection {
     }
 }
 
+/* Creates variables from data in json file for single movie page */ 
 
 class Movie {
     static BACKDROP_BASE_URL = 'http://image.tmdb.org/t/p/w780';
     constructor(json) {
         this.id = json.id;
         this.title = json.title;
-        this.genres = json.genres;
         this.releaseDate = json.release_date;
         this.runtime = json.runtime + " minutes";
         this.overview = json.overview;
         this.posterPath = json.poster_path;
         this.backdropPath = json.backdrop_path;
+
+        this.genres = json.genres;
         this.language = json.spoken_languages;
+        this.productionCompanies = json.production_companies;
+
+        this.voteAverage = json.vote_average;
+        this.voteCount = json.vote_count;
+
+    }
+
+    static async listOflanguages()
+    {
+        console.log(this.language)
     }
 
     get backdropUrl() {
@@ -288,17 +330,142 @@ class Movie {
     }
 }
 
+document.addEventListener("DOMContentLoaded", App.run);
 
+// END OF ORIGINAL CODE
 
-document.getElementById('homeBtn').addEventListener('click', (e) => {
-  document.getElementById('container').innerHTML = " "
-  App.run("now_playing")
-       })
- 
+class renderMovieActors {
 
+    static IMAGE_URL = 'http://image.tmdb.org/t/p/w780';
 
-document.addEventListener("DOMContentLoaded", App.run("now_playing"));
+    static async render(actors)
+    {   
+        console.log(actors)
+        let crew = document.createElement('div')
+        crew.className="movieCrew"
 
+        MoviePage.container.append(crew)
+        
+        this.getDirector(actors)
+        this.getActors(actors)
+        
+    }
 
+    static async getDirector(direct) {
+        let director = direct.crew.filter((e)=>{ return e.job=="Director"})
+         this.renderAct(director[0])
+    }
+    static async getActors(actors)
+    {
+
+        actors.cast.forEach((e,n)=>{
+            if(n<5)
+            {
+            return this.renderAct(e)
+            }
+          
+        })
+    }
+
+    static async renderAct(crew) {
+        let crewDiv = document.createElement('div')
+        let crewImage = document.createElement('img')
+        let crewName = document.createElement('span')
+        
+        crewName.innerHTML = `${crew.name}`
+        crewImage.src = `${this.IMAGE_URL}${crew.profile_path}`
+        crewDiv.append(crewImage)
+        crewDiv.append(crewName)
+
+        document.querySelector('.movieCrew').append(crewDiv)
+    }
+
+}
+
+class renderTrailer{
+    static async render(video)
+    {
+        let url = video.results.map(e => e.key)
+        let videoSection = document.createElement('div');
+        let videoFrame = document.createElement('iframe');
+        videoFrame.src=`https://www.youtube.com/embed/${url[1]}`
+        videoSection.className="videoSection";
+        videoSection.innerHTML=`<h2> Trailer </h2>`
+        videoSection.append(videoFrame)
+        MoviePage.container.append(videoSection)
+
+        
+    }
+}
+
+class renderProductionCompany{
+    static IMG_URL = `http://image.tmdb.org/t/p/w780/`
+    static async render(companies)
+    {
+        let comContain = document.createElement("div")
+        comContain.className="companies"
+        companies.forEach(e=>{
+            let comdiv = document.createElement("div")
+            let comName = document.createElement("h3")
+            let comLogo = document.createElement('img')
+            
+            comLogo.src=`${this.IMG_URL}${e.logo_path}`
+            comName.innerHTML = e.name
+            comdiv.append(comName)
+            comdiv.append(comLogo)
+
+            comContain.append(comdiv)
+
+        })
+        MoviePage.container.append(comContain)
+    }
+
+}
+
+class renderSimilar{
+    static IMG_URL = `http://image.tmdb.org/t/p/w780/`
+
+    static async render(similar){
+        console.log(similar)
+
+        let relatedMoviesConatainer = document.createElement('div')
+        relatedMoviesConatainer.innerHTML= `<h2>Similar Movies</h2>`
+        let relatedmovies = document.createElement('div')
+        relatedMoviesConatainer.className= "relatedMoviesContainer"
+        
+        relatedMoviesConatainer.append(relatedmovies)
+
+        similar.results.forEach((movie,index)=>{
+            if (index < 5)
+            {
+            let movieDiv = document.createElement('div')
+            movieDiv.addEventListener('click',()=> {
+                Movies.run(movie)
+            })
+            let moviePhoto = document.createElement('img')
+            let movieName = document.createElement('span')
+            
+            moviePhoto.src=`${this.IMG_URL}${movie.poster_path}`
+            movieName.innerHTML=`${movie.title}`
+            movieDiv.append(moviePhoto)
+            movieDiv.append(movieName)
+            
+            relatedmovies.append(movieDiv)
+            }
+        })
+
+        MoviePage.container.append(relatedMoviesConatainer)
+    }
+}
+
+document.getElementById('homeBtn').addEventListener('click', () => {
+    document.getElementById("container").innerHTML = " ";
+    App.run()
+})
+    
+document.getElementById("actorsButton").addEventListener('click', () => {
+    document.getElementById("container").innerHTML = " ";
+
+})
 
 
