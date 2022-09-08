@@ -46,11 +46,19 @@ class APIService {
         return new SingleActor(data);
       }
 
+      static async fetchActorCredit(personId){
+        const url = APIService._constructUrl(`/person/${personId}/movie_credits`)
+        const response =  await fetch(url)
+        const data = await response.json()
+        console.log(data)
+        return new MovieCredits(data);
+      }
+
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
     }
 }
-//https://api.themoviedb.org/3/person/18?api_key=bae5a03c227c33b8d9842f4e6c132889
+
 
 
 class ActorsPage {
@@ -58,7 +66,7 @@ class ActorsPage {
         if (container.innerText !== '') {
             container.innerText = ''
         }
-
+        
         const actorData = await APIService.fetchPopularActors()
         ActorsPage.renderActors(actorData)
     }
@@ -66,70 +74,115 @@ class ActorsPage {
         const div = document.createElement('div')
         div.setAttribute('class', 'row p-4')
         const actorsContainer = container.appendChild(div)
-
+        
         actors.forEach((actor) => {
             const actorDiv = document.createElement('div')
             actorDiv.setAttribute(
                 'class',
                 'col-lg-2 col-md-3 col-sm-4 col-6'
-            )
-            const actorImage = document.createElement('img')
-            actorImage.setAttribute('class', 'img-fluid')
-            actorImage.src = `${actor.actorsProfileUrl()}`
-
-            const actorTitle = document.createElement('h3')
-            actorTitle.textContent = `${actor.name.toUpperCase()}`
-            actorTitle.setAttribute('class', 'text-center')
-
-            actorImage.addEventListener('click', function() {
-                SingleActorPage.run(actor.id) 
+                )
+                const actorImage = document.createElement('img')
+                actorImage.setAttribute('class', 'img-fluid')
+                actorImage.src = `${actor.actorsProfileUrl()}`
+                
+                const actorTitle = document.createElement('h3')
+                actorTitle.textContent = `${actor.name.toUpperCase()}`
+                actorTitle.setAttribute('class', 'text-center')
+                
+                actorImage.addEventListener('click', function() {
+                    SingleActorPage.run(actor.id) 
+                })
+                
+                actorDiv.appendChild(actorImage)
+                actorDiv.appendChild(actorTitle)
+                actorsContainer.appendChild(actorDiv)
             })
-
-            actorDiv.appendChild(actorImage)
-            actorDiv.appendChild(actorTitle)
-            actorsContainer.appendChild(actorDiv)
-        })
-    }
-}
-
-class SingleActorPage {
-    static async run(actorId){
-        if (container.innerText !== '') {
-            container.innerText = ''
         }
-        const singleActorData = await APIService.fetchSingleActor(actorId)
-        SingleActorPage.renderActor(singleActorData)
     }
-
-    static renderActor(singleActor){
     
-         ActorPage.container.innerHTML = `
-      <div class="row align-items-center">
-      <div class="col-md-4 my-4">
-        <img class="img-fluid" src=${singleActor.actorsProfileUrl()}> 
-      </div>
-      <div class="col-md-8">
-        <h2>${singleActor.name}</h2>
-        <p class="lead"><strong>Job:</strong> ${singleActor.knownForDepartment}</p>
-        <p class="lead"><strong>Birthday:</strong> ${singleActor.birthday}</p>
-        <p class="lead"><strong>Gender:</strong> ${singleActor.genderIdentifier()}</p>
-        <h5>Biography:</h5><p class="lead"><strong> ${singleActor.biography}</strong></p>
-        <p class="lead"><strong>Popularity:</strong> ${singleActor.popularity}</p>
+class SingleActorPage {
+        static async run(actorId){
+            if (container.innerText !== '') {
+                container.innerText = ''
+            }
+            const singleActorData = await APIService.fetchSingleActor(actorId)
+            const movieCredits = await APIService.fetchActorCredit(actorId)
+            SingleActorPage.renderActor(singleActorData, movieCredits)
+        }
+
+    
+        
+        
+        static renderActor(singleActor, movieCredits){
+
+            const moviesCast = movieCredits.moviesInCast.map(movie => `
+            <div class="movie-card col-md-2 col-sm-4 col-6">
+              <img class="img-fluid" src=${movieCredits.castMoviesPosterUrl(movieCredits.moviesInCast.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
+              <h6>${movie.title} as ${movie.character}</h6>
+            </div>`).join(" ");
+
+            const moviesCrew = movieCredits.moviesInCrew.map(movie => `
+            <div class="movie-card col-md-2 col-sm-4 col-6">
+            <img class="img-fluid" src=${movieCredits.crewMoviesPosterUrl(movieCredits.moviesInCrew.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
+            <h6>${movie.title} as ${movie.job}</h6>
+           </div>`).join(" ");
+            
+            ActorPage.container.innerHTML = `
+            <div class="row align-items-center">
+            <div class="col-md-4 my-4">
+            <img class="img-fluid" src=${singleActor.actorsProfileUrl()}> 
+            </div>
+            <div class="col-md-8">
+            <h1>${singleActor.name}</h1>
+            <p class="lead"><strong>Job:</strong> ${singleActor.knownForDepartment}</p>
+            <p class="lead"><strong>Birthday:</strong> ${singleActor.birthday}</p>
+            <p class="lead"><strong>Gender:</strong> ${singleActor.genderIdentifier()}</p>
+            <h5>Biography:</h5><p class="lead"><strong> ${singleActor.biography}</strong></p>
+            <p class="lead"><strong>Popularity:</strong> ${singleActor.popularity}</p>
+            </div>
+            </div>
+            <div class="row align-items-center">
+            <h1>Movies in Cast</h1>
+            <div col-md-6 my-4>
+            <
+            </div>
+            </div>
+            <div class="row" style="text-align: center;">
+      <h3>Movies In Cast</h3>
+      <div class="row justify-content-center">
+        ${moviesCast}
       </div>
     </div>
-  `
+    <div class="row" style="text-align: center;">
+      <h3>Movies In Crew</h3>
+      <div class="row justify-content-center">
+        ${moviesCrew}
+      </div>
+    </div>`
+            
+            
+        }
     }
-}
 
 class ActorPage {
-    static container = document.getElementById('container');
-    static renderActorPage(actor) {
-        SingleActorPage.renderActor(actor);
-    }
+        static container = document.getElementById('container');
+        static renderActorPage(actor) {
+            SingleActorPage.renderActor(actor);
+        }
 }
-
-
-
+class MovieCredits {
+    constructor(json) {
+          this.moviesInCast = json.cast.slice(0, 6)
+          this.moviesInCrew = json.crew.slice(0, 6)
+    }
+    castMoviesPosterUrl(i) {
+            return this.moviesInCast[i].poster_path ? Movie.BACKDROP_BASE_URL + this.moviesInCast[i].poster_path : "";
+    };
+        
+    crewMoviesPosterUrl(i) {
+            return this.moviesInCrew[i].poster_path ? Movie.BACKDROP_BASE_URL + this.moviesInCrew[i].poster_path : "";
+    };
+}
 
 class SingleActor {
     static PROFILE_PATH_URL = 'http://image.tmdb.org/t/p/w780';
@@ -145,11 +198,7 @@ class SingleActor {
         this.id = json.id
     }
     genderIdentifier(){
-        if (this.gender == 1){
-            return "Female"
-        } else {
-            return "Male"
-        }
+        return this.gender == 1 ? "Female" : "Male"
     }
     actorsProfileUrl() {
         return this.profilePath ? SingleActor.PROFILE_PATH_URL + this.profilePath : ''
@@ -257,3 +306,7 @@ document.getElementById('homeBtn').addEventListener('click', (e) => {
 
 
 document.addEventListener("DOMContentLoaded", App.run("now_playing"));
+
+
+
+
