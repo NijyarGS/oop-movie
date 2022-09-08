@@ -1,4 +1,5 @@
 //the API documentation site https://developers.themoviedb.org/3/
+const container = document.getElementById('container')
 
 class App {
     static async run(input) {
@@ -21,7 +22,6 @@ class APIService {
         const url = APIService._constructUrl(`movie/${movieId}`)
         const response = await fetch(url)
         const data = await response.json()
-       
         return new Movie(data)
     }
 
@@ -31,11 +31,130 @@ class APIService {
         return data.results.map(movie => new Movie(movie))
       }
 
+      static async fetchPopularActors() {
+        const url = APIService._constructUrl(`person/popular`)
+        const response = await fetch(url)
+        const data = await response.json()
+        console.log(data.results)
+        return data.results.map((movie) => new SingleActor(movie))
+    }
+
+    static async fetchSingleActor(personId) {
+        const url = APIService._constructUrl(`person/${personId}`);
+        const response = await fetch(url)
+        const data = await response.json();
+        return new SingleActor(data);
+      }
+
     static _constructUrl(path) {
         return `${this.TMDB_BASE_URL}/${path}?api_key=${atob('NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI=')}`;
     }
 }
+//https://api.themoviedb.org/3/person/18?api_key=bae5a03c227c33b8d9842f4e6c132889
 
+
+class ActorsPage {
+    static async run() {
+        if (container.innerText !== '') {
+            container.innerText = ''
+        }
+
+        const actorData = await APIService.fetchPopularActors()
+        ActorsPage.renderActors(actorData)
+    }
+    static renderActors(actors) {
+        const div = document.createElement('div')
+        div.setAttribute('class', 'row p-4')
+        const actorsContainer = container.appendChild(div)
+
+        actors.forEach((actor) => {
+            const actorDiv = document.createElement('div')
+            actorDiv.setAttribute(
+                'class',
+                'col-lg-2 col-md-3 col-sm-4 col-6'
+            )
+            const actorImage = document.createElement('img')
+            actorImage.setAttribute('class', 'img-fluid')
+            actorImage.src = `${actor.actorsProfileUrl()}`
+
+            const actorTitle = document.createElement('h3')
+            actorTitle.textContent = `${actor.name.toUpperCase()}`
+            actorTitle.setAttribute('class', 'text-center')
+
+            actorImage.addEventListener('click', function() {
+                SingleActorPage.run(actor.id) 
+            })
+
+            actorDiv.appendChild(actorImage)
+            actorDiv.appendChild(actorTitle)
+            actorsContainer.appendChild(actorDiv)
+        })
+    }
+}
+
+class SingleActorPage {
+    static async run(actorId){
+        if (container.innerText !== '') {
+            container.innerText = ''
+        }
+        const singleActorData = await APIService.fetchSingleActor(actorId)
+        SingleActorPage.renderActor(singleActorData)
+    }
+
+    static renderActor(singleActor){
+    
+         ActorPage.container.innerHTML = `
+      <div class="row align-items-center">
+      <div class="col-md-4 my-4">
+        <img class="img-fluid" src=${singleActor.actorsProfileUrl()}> 
+      </div>
+      <div class="col-md-8">
+        <h2>${singleActor.name}</h2>
+        <p class="lead"><strong>Job:</strong> ${singleActor.knownForDepartment}</p>
+        <p class="lead"><strong>Birthday:</strong> ${singleActor.birthday}</p>
+        <p class="lead"><strong>Gender:</strong> ${singleActor.genderIdentifier()}</p>
+        <h5>Biography:</h5><p class="lead"><strong> ${singleActor.biography}</strong></p>
+        <p class="lead"><strong>Popularity:</strong> ${singleActor.popularity}</p>
+      </div>
+    </div>
+  `
+    }
+}
+
+class ActorPage {
+    static container = document.getElementById('container');
+    static renderActorPage(actor) {
+        SingleActorPage.renderActor(actor);
+    }
+}
+
+
+
+
+class SingleActor {
+    static PROFILE_PATH_URL = 'http://image.tmdb.org/t/p/w780';
+    constructor(json) {
+        this.name = json.name
+        this.gender = json.gender 
+        this.profilePath = json.profile_path
+        this.popularity = json.popularity
+        this.biography = json.biography
+        this.birthday = json.birthday
+        this.deathday = json.deathday
+        this.knownForDepartment = json.known_for_department
+        this.id = json.id
+    }
+    genderIdentifier(){
+        if (this.gender == 1){
+            return "Female"
+        } else {
+            return "Male"
+        }
+    }
+    actorsProfileUrl() {
+        return this.profilePath ? SingleActor.PROFILE_PATH_URL + this.profilePath : ''
+    }
+}
 
 class HomePage {
     static container = document.getElementById('container');
@@ -57,8 +176,8 @@ class HomePage {
                 Movies.run(movie);
             });
 
-            movieDiv.appendChild(movieTitle);
             movieDiv.appendChild(movieImage);
+            movieDiv.appendChild(movieTitle);
             this.container.appendChild(movieDiv);
         })
     }
@@ -136,5 +255,5 @@ document.getElementById('homeBtn').addEventListener('click', (e) => {
        })
  
 
-// Home.homeButton()
+
 document.addEventListener("DOMContentLoaded", App.run("now_playing"));
