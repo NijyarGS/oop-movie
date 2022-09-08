@@ -35,7 +35,6 @@ class APIService {
         const url = APIService._constructUrl(`person/popular`)
         const response = await fetch(url)
         const data = await response.json()
-        console.log(data.results)
         return data.results.map((movie) => new SingleActor(movie))
     }
 
@@ -50,7 +49,6 @@ class APIService {
         const url = APIService._constructUrl(`/person/${personId}/movie_credits`)
         const response =  await fetch(url)
         const data = await response.json()
-        console.log(data)
         return new MovieCredits(data);
       }
 
@@ -116,15 +114,15 @@ class SingleActorPage {
         static renderActor(singleActor, movieCredits){
 
             const moviesCast = movieCredits.moviesInCast.map(movie => `
-            <div class="movie-card col-md-2 col-sm-4 col-6">
-              <img class="img-fluid" src=${movieCredits.castMoviesPosterUrl(movieCredits.moviesInCast.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
-              <h6>${movie.title} as ${movie.character}</h6>
+            <div class="movie-card col-md-2 col-sm-4 col-12 my-3">
+              <img class="img-fluid" src=${movieCredits.castPosterUrl(movieCredits.moviesInCast.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
+              <h6>${movie.title} as <em>${movie.character}</em></h6>
             </div>`).join(" ");
 
             const moviesCrew = movieCredits.moviesInCrew.map(movie => `
-            <div class="movie-card col-md-2 col-sm-4 col-6">
-            <img class="img-fluid" src=${movieCredits.crewMoviesPosterUrl(movieCredits.moviesInCrew.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
-            <h6>${movie.title} as ${movie.job}</h6>
+            <div class="movie-card col-md-2 col-sm-4 col-12 my-3">
+            <img class="img-fluid" src=${movieCredits.crewPosterUrl(movieCredits.moviesInCrew.indexOf(movie))} alt="${movie.title}" onclick="Movies.run(${movie.id})">
+            <h5>${movie.title} as <em>${movie.job}</em></h5>
            </div>`).join(" ");
             
             ActorPage.container.innerHTML = `
@@ -141,20 +139,14 @@ class SingleActorPage {
             <p class="lead"><strong>Popularity:</strong> ${singleActor.popularity}</p>
             </div>
             </div>
-            <div class="row align-items-center">
-            <h1>Movies in Cast</h1>
-            <div col-md-6 my-4>
-            <
-            </div>
-            </div>
             <div class="row" style="text-align: center;">
-      <h3>Movies In Cast</h3>
+      <h1>Movies In Cast</h1>
       <div class="row justify-content-center">
         ${moviesCast}
       </div>
     </div>
     <div class="row" style="text-align: center;">
-      <h3>Movies In Crew</h3>
+      <h1>Movies In Crew</h1>
       <div class="row justify-content-center">
         ${moviesCrew}
       </div>
@@ -175,11 +167,11 @@ class MovieCredits {
           this.moviesInCast = json.cast.slice(0, 6)
           this.moviesInCrew = json.crew.slice(0, 6)
     }
-    castMoviesPosterUrl(i) {
+    castPosterUrl(i) {
             return this.moviesInCast[i].poster_path ? Movie.BACKDROP_BASE_URL + this.moviesInCast[i].poster_path : "";
     };
         
-    crewMoviesPosterUrl(i) {
+    crewPosterUrl(i) {
             return this.moviesInCrew[i].poster_path ? Movie.BACKDROP_BASE_URL + this.moviesInCrew[i].poster_path : "";
     };
 }
