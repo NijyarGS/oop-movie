@@ -285,6 +285,31 @@ class HomePage {
     
 }
 
+class AboutPage {
+    static renderAboutPage(){
+      container.innerHTML =`
+      <div class="text-center" id="aboutPage">
+        
+        <h3 class="my-3">Website Content:</h3>
+        <h4>Home Page</h4>
+        <p>Displays movies now playing as a default</p>
+        <p>Show movies based on the genre or filter selected from dropdown menu</p>
+        <p>Each movie card takes you to the single movie page when clicked</p>
+        <h4>Single Movie Page</h4>
+        <p>Displays movie detailes, trailer, cast, and simliar movies</p>
+        <p>Any card clicked takes you to the corresponding actor or movie page</p>
+        <h4>Actors Page</h4>
+        <p>Displays the popular actors</p>
+        <p>Each actor card takes you to single actor page when clicked</p>
+        <p>Single actor page contains the actor's information plus the movies he/she played in</p>
+        <h4>Search Bar</h4>
+        <p>Takes the given input and displays all matching movies and actors</p>
+        <p>Any card clicked takes you to the corresponding actor or movie page</p>
+        <p class="my-4 h5">This website was build with Nijyar's hyperactivity, Sarah's mood swings, Paywand's screams, and Zaynab's frustration.</p>
+        </div>`
+    }
+  }
+  
 
 class Movies {
     static async run(movie) {
